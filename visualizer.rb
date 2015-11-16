@@ -8,7 +8,7 @@ class Visualizer < Processing::App
 
   def setup
     smooth
-    size(1280,800)
+    size(1024,500)
     background 10
     setup_sound
   end
@@ -20,8 +20,9 @@ class Visualizer < Processing::App
 
   def setup_sound
     @minim = Minim.new(self)
-  #  @player = @minim.loadFile("A Runaway Kite.mp3")
-    @input = @minim.get_line_in
+    @input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/kite.mp3")
+    #@input = @minim.get_line_in
+    @input.play
 
     @fft = FFT.new(@input.left.size, 44100)
     @beat = BeatDetect.new
