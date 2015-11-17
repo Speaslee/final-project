@@ -16,11 +16,12 @@ class Visualizer < Processing::App
   def draw
     update_sound
     animate_sound
+
   end
 
   def setup_sound
     @minim = Minim.new(self)
-    @input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/kite.mp3")
+    @input = @minim.load_file("https://p.scdn.co/mp3-preview/a5e44c043b4e27c01ee92be422224edd2a222f34")
     #@input = @minim.get_line_in
     @input.play
 
