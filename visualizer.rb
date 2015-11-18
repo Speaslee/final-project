@@ -1,3 +1,6 @@
+
+
+
 class Visualizer < Processing::App
   require 'pry'
   load_library "minim"
@@ -16,17 +19,22 @@ class Visualizer < Processing::App
   def draw
     update_sound
     animate_sound
-
+    draw_beat
   end
 
   def setup_sound
     @minim = Minim.new(self)
-    @input = @minim.load_file("https://p.scdn.co/mp3-preview/a5e44c043b4e27c01ee92be422224edd2a222f34")
+    #@input = @minim.load_file("https://p.scdn.co/mp3-preview/a5e44c043b4e27c01ee92be422224edd2a222f34")
+    @input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/love_hurts.mp3")
     #@input = @minim.get_line_in
     @input.play
 
     @fft = FFT.new(@input.left.size, 44100)
-    @beat = BeatDetect.new
+    @beat = BeatDetect.new(@input.bufferSize, @input.sampleRate)
+    @beat.setSensitivity(300)
+    @kickSize = @snareSize = @hatSize = 16
+
+    bl = BeatListener.new @beat, @input
     @freqs = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000]
 
     @current_ffts = Array.new(@freqs.size, 0.001)
@@ -47,6 +55,7 @@ class Visualizer < Processing::App
     end
 
     @beat.detect(@input.left)
+
   end
 
   def animate_sound
@@ -77,6 +86,38 @@ class Visualizer < Processing::App
     ellipse(@x2, @y2, @size, @size)
 
   end
+
+  def draw_beat
+    @kickSize = 80 if @beat.kick?
+    @snareSize = 80 if @beat.snare?
+    @hatSize = 80 if @beat.hat?
+    @kickSize = constrain(@kickSize * 0.95, 16, 80)
+    @snareSize = constrain(@snareSize * 0.95, 16, 80)
+    @hatSize = constrain(@hatSize * 0.95, 16, 80)
+
+    strokeWeight(5)
+    stroke 255
+    line(100, 500, 100, height - @kickSize)
+    stroke 120, 90, 90
+    line(200, 500, 200, height - @snareSize)
+    stroke 180,90, 90
+    line(300, 500, 300, height - @hatSize)
+  end
+
+end
+
+class BeatListener
+    include Java.ddf.minim.AudioListener
+    def initialize beat, source
+      @source = source
+      @source.addListener(self)
+      @beat = beat
+    end
+
+    def samples samps, sampsR = nil
+
+      @beat.detect(samps)
+    end
 
 end
 Visualizer.new :title => "Visualizer"
