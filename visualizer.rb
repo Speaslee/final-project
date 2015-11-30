@@ -1,5 +1,7 @@
 class Visualizer < Processing::App
   require 'pry'
+  require 'fileutils'
+  require './import.rb'
   load_library "minim"
   import "ddf.minim"
   import "ddf.minim.analysis"
@@ -11,7 +13,7 @@ class Visualizer < Processing::App
     size(1024,500)
     background 10
     setup_sound
-
+    @color = []
   end
 
   def draw
@@ -19,12 +21,23 @@ class Visualizer < Processing::App
     animate_sound
     draw_beat
     saveFrame("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-######.jpg")
+    mov_make
+  end
+
+  def mov_make
+    if @input.isPlaying == false
+      color_assignment
+      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}.mp4"
+      FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
+      exit
+    end
   end
 
   def setup_sound
     @minim = Minim.new(self)
     #@input = @minim.load_file("https://p.scdn.co/mp3-preview/a5e44c043b4e27c01ee92be422224edd2a222f34")
-    @input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/love_hurts.mp3")
+    @input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3")
+    @name = File.basename("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3", ".*")
     #@input = @minim.get_line_in
     @input.play
 
@@ -66,6 +79,8 @@ class Visualizer < Processing::App
     @blue1 = @scaled_ffts[4]*255
 
     fill @red1, @green1, @blue1
+    @color.push([@red1.to_i, @green1.to_i, @blue1.to_i])
+
     stroke @red1+20, @green1+20, @blue1+20
 
     ellipse(@xl, @yl, @size, @size)
@@ -79,6 +94,7 @@ class Visualizer < Processing::App
     @blue2   = @scaled_ffts[9]*255
 
     fill @red2, @green2, @blue2
+    @color.push([@red2.to_i, @green2.to_i, @blue2.to_i])
 
     stroke @red2+20, @green2+20, @blue2+20
     ellipse(@x2, @y2, @size, @size)
@@ -117,6 +133,14 @@ class Visualizer < Processing::App
     line(300, 500, 300, height - @hatSize2)
   end
 
+  def color_assignment
+    m = ColorMatcher.new
+    names = @color.map do |c|
+      c = m.match c
+    end
+    @assigned_color = names.group_by(&:to_s).values.max_by(&:size).first
+  end
+  puts @assigned_color
 end
 
 class BeatListener
@@ -131,9 +155,7 @@ class BeatListener
 
       @beat.detect(samps)
     end
-
-
-  end
+end
 
 
 Visualizer.new :title => "Visualizer"
