@@ -1,7 +1,12 @@
-require "sinatra/base"
+# require "sinatra/base"
+require "sinatra"
 
-class Pantonely < Sinatra::base
-  set :logging, true
+# class Pantonely < Sinatra::Base
+#   set :logging, true
 
+get '/' do
+  erb :webpage
 end
-Pantonely.run!
+
+# end
+# Pantonely.run!
