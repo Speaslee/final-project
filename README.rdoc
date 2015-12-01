@@ -1,6 +1,6 @@
 == README
 
 Visualizer for the Pantonely app located at https://github.com/Speaslee/pantonely
-Pantonely is live at pantonely.herokuapp.com
+Pantonely is live at http://pantonely.herokuapp.com
 
 This visualizer utilizes the Minim library for jruby.processing to create quicktime movies of the songs uploaded by users of the Pantonely app.

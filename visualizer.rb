@@ -139,8 +139,8 @@ class Visualizer < Processing::App
       c = m.match c
     end
     @assigned_color = names.group_by(&:to_s).values.max_by(&:size).first
+    puts @assigned_color
   end
-  puts @assigned_color
 end
 
 class BeatListener
