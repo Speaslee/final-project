@@ -2,18 +2,41 @@ class Visualizer < Processing::App
   require 'pry'
   require 'fileutils'
   require './import.rb'
+  require 'httparty'
   load_library "minim"
   import "ddf.minim"
   import "ddf.minim.analysis"
 
+  def self.run!(song, name)
+    Visualizer.new(song, name)
+    upload
+    FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}.mp4")
+  end
+
+  def upload
+    storage = Fog::Storage.new({
+      :provider => 'AWS',
+      :aws_access_key_id =>ENV['CARRIER_ID'],
+      :aws_secret_access_key => ENV['CARRIER_ACCESS_KEY']
+      })
+      directory = 'pantonely'
+
+      file = directory.files.create(
+      :key =>"#{@name}.mp4",
+      :body => File.open("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}.mp4"),
+      :public => true
+      )
+  end
 
 
-  def setup
+  def setup(song, name)
     smooth
     size(1024,500)
     background 10
     setup_sound
     @color = []
+    @new_song = song
+    @name = name
   end
 
   def draw
@@ -35,10 +58,9 @@ class Visualizer < Processing::App
 
   def setup_sound
     @minim = Minim.new(self)
-    #@input = @minim.load_file("https://p.scdn.co/mp3-preview/a5e44c043b4e27c01ee92be422224edd2a222f34")
-    @input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3")
-    @name = File.basename("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3", ".*")
-    #@input = @minim.get_line_in
+    @input = @minim.load_file(@new_song)
+    #@input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/love_hurts.mp3")
+    #@name = File.basename("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/love_hurts.mp3", ".*")
     @input.play
 
     @fft = FFT.new(@input.left.size, 44100)

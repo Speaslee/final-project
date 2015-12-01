@@ -1,8 +1,7 @@
-
 class MusicWorker
   include Sidekiq::Worker
-  def perform(name)
-    puts name
+  def perform path, name
+    Visualizer.run!(path, name)
   end
 
 end
