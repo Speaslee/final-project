@@ -3,6 +3,7 @@ class Visualizer < Processing::App
   require 'fileutils'
   require './import.rb'
   require 'httparty'
+  require 'color_namer'
   load_library "minim"
   import "ddf.minim"
   import "ddf.minim.analysis"
@@ -59,8 +60,8 @@ class Visualizer < Processing::App
   def setup_sound
     @minim = Minim.new(self)
     @input = @minim.load_file(@new_song)
-    #@input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/love_hurts.mp3")
-    #@name = File.basename("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/love_hurts.mp3", ".*")
+    #@input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3")
+    #@name = File.basename("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3", ".*")
     @input.play
 
     @fft = FFT.new(@input.left.size, 44100)
@@ -101,7 +102,7 @@ class Visualizer < Processing::App
     @blue1 = @scaled_ffts[4]*255
 
     fill @red1, @green1, @blue1
-    @color.push([@red1.to_i, @green1.to_i, @blue1.to_i])
+    @color.push(ColorNamer.name_from_rgb(@red1.to_i, @green1.to_i, @blue1.to_i).last)
 
     stroke @red1+20, @green1+20, @blue1+20
 
@@ -156,11 +157,7 @@ class Visualizer < Processing::App
   end
 
   def color_assignment
-    m = ColorMatcher.new
-    names = @color.map do |c|
-      c = m.match c
-    end
-    @assigned_color = names.group_by(&:to_s).values.max_by(&:size).first
+    @assigned_color = @color.group_by(&:to_s).values.max_by(&:size).first
     puts @assigned_color
   end
 end

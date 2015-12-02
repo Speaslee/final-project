@@ -3,6 +3,9 @@ GEM
   specs:
     CFPropertyList (2.3.2)
     builder (3.2.2)
+    color (1.8)
+    color_namer (0.1.0)
+      color (>= 1.4.1)
     concurrent-ruby (1.0.0-java)
     connection_pool (2.2.0)
     dotenv (2.0.2)
@@ -138,6 +141,7 @@ PLATFORMS
   java
 
 DEPENDENCIES
+  color_namer
   dotenv
   fog
   httparty
