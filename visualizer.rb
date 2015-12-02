@@ -24,7 +24,7 @@ class Visualizer < Processing::App
 
       file = directory.files.create(
       :key =>"#{@name}.mp4",
-      :body => File.open("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}.mp4"),
+      :body => File.open("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4"),
       :public => true
       )
   end
