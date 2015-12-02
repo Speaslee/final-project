@@ -1,43 +1,47 @@
+require 'ruby-processing'
+require 'ruby-processing/runner'
 class Visualizer < Processing::App
   require 'pry'
   require 'fileutils'
-  require './import.rb'
   require 'httparty'
   require 'color_namer'
+  require 'fog'
+  require 'dotenv'
+  Dotenv.load
   load_library "minim"
   import "ddf.minim"
   import "ddf.minim.analysis"
 
-  def self.run!(song, name)
-    Visualizer.new(song, name)
-    upload
-    FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}.mp4")
+  def self.run!
+    Visualizer.new :title =>"Visualizer"
+
   end
 
   def upload
-    storage = Fog::Storage.new({
+
+    connection = Fog::Storage.new({
       :provider => 'AWS',
       :aws_access_key_id =>ENV['CARRIER_ID'],
-      :aws_secret_access_key => ENV['CARRIER_ACCESS_KEY']
+      :aws_secret_access_key =>ENV['CARRIER_ACCESS_KEY']
       })
-      directory = 'pantonely'
+      directory = connection.directories.get('pantonely')
 
       file = directory.files.create(
-      :key =>"#{@name}.mp4",
+      :key =>"#{@name}_#{@assigned_color}.mp4",
       :body => File.open("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4"),
       :public => true
       )
   end
 
 
-  def setup(song, name)
+  def setup
     smooth
     size(1024,500)
     background 10
+    @new_song = ENV["FILEPATH"]
+    @name = File.basename(ENV["NAME"], ".*")
     setup_sound
     @color = []
-    @new_song = song
-    @name = name
   end
 
   def draw
@@ -51,8 +55,10 @@ class Visualizer < Processing::App
   def mov_make
     if @input.isPlaying == false
       color_assignment
-      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}.mp4"
+      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}_#{@assigned_color}.mp4"
       FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
+      upload
+      FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4")
       exit
     end
   end
@@ -60,8 +66,8 @@ class Visualizer < Processing::App
   def setup_sound
     @minim = Minim.new(self)
     @input = @minim.load_file(@new_song)
-    #@input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3")
-    #@name = File.basename("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/kite.mp3", ".*")
+    #@input = @minim.load_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/groove.mp3")
+    #@name = File.basename("/Users/sophiapeaslee/Desktop/Programs/finalproject/songs/groove.mp3", ".*")
     @input.play
 
     @fft = FFT.new(@input.left.size, 44100)
@@ -117,7 +123,7 @@ class Visualizer < Processing::App
     @blue2   = @scaled_ffts[9]*255
 
     fill @red2, @green2, @blue2
-    @color.push([@red2.to_i, @green2.to_i, @blue2.to_i])
+    @color.push(ColorNamer.name_from_rgb(@red2.to_i, @green2.to_i, @blue2.to_i).last)
 
     stroke @red2+20, @green2+20, @blue2+20
     ellipse(@x2, @y2, @size, @size)
@@ -177,4 +183,4 @@ class BeatListener
 end
 
 
-Visualizer.new :title => "Visualizer"
+Visualizer.run!

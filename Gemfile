@@ -5,3 +5,4 @@ gem "httparty"
 gem "fog"
 gem "dotenv"
 gem "color_namer"
+gem 'sinatra'
