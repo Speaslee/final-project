@@ -18,7 +18,6 @@ class Visualizer < Processing::App
   end
 
   def upload
-
     connection = Fog::Storage.new({
       :provider => 'AWS',
       :aws_access_key_id =>ENV['CARRIER_ID'],
@@ -27,7 +26,7 @@ class Visualizer < Processing::App
       directory = connection.directories.get('pantonely')
 
       file = directory.files.create(
-      :key =>"#{@name}_#{@assigned_color}.mp4",
+      :key => "#{@name}_#{@assigned_color}.mp4",
       :body => File.open("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4"),
       :public => true
       )
