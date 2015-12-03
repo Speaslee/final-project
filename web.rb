@@ -1,8 +1,11 @@
 require 'sinatra/base'
+require 'tilt/erb'
+
 class Web < Sinatra::Base
     set :logging, true
     get '/' do
-      print 'hello world'
+      erb :list
     end
 
   end
+Web.run!
