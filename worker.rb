@@ -3,7 +3,9 @@ require 'sinatra'
 require 'redis'
 require 'sidekiq/api'
 
-
+Sidekiq.configure_server do |config|
+  config.redis = { :namespace => 'x' }
+end
 
 class MusicWorker
   include Sidekiq::Worker
