@@ -153,6 +153,7 @@ DEPENDENCIES
   dotenv
   fog
   httparty
+  redis
   ruby-processing (= 2.6.10)
   sidekiq
   sinatra
