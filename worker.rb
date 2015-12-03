@@ -1,3 +1,10 @@
+require 'sidekiq'
+require 'sinatra'
+require 'redis'
+require 'sidekiq/api'
+
+$redis= Redis.new
+
 
 class MusicWorker
   include Sidekiq::Worker
@@ -7,7 +14,15 @@ class MusicWorker
   puts cmd
   `#{cmd}`
   end
-
 end
 
-MusicWorker.new.perform("https://s3.amazonaws.com/pantonely/uploads/song/songfile/1/kite.mp3", "kite.mp3")
+  get '/' do
+    stats = Sidekiq::Stats.new
+    @failed = stats.failed
+    @processed = stats.processed
+    erb :index
+  end
+
+
+
+#MusicWorker.new.perform("https://s3.amazonaws.com/pantonely/uploads/song/songfile/1/kite.mp3", "kite.mp3")

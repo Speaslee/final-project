@@ -58,7 +58,7 @@ class Visualizer < Processing::App
       FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
       upload
       FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4")
-      exit
+     exit
     end
   end
 
