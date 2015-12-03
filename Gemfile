@@ -6,3 +6,4 @@ gem "fog"
 gem "dotenv"
 gem "color_namer"
 gem 'sinatra'
+gem 'redis'

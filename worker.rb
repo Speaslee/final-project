@@ -3,7 +3,6 @@ require 'sinatra'
 require 'redis'
 require 'sidekiq/api'
 
-$redis= Redis.new
 
 
 class MusicWorker
