@@ -20,8 +20,9 @@ class Visualizer < Processing::App
   def upload
     connection = Fog::Storage.new({
       :provider => 'AWS',
-      :aws_access_key_id =>ENV['CARRIER_ID'],
-      :aws_secret_access_key =>ENV['CARRIER_ACCESS_KEY']
+      :region => 'us-east-1',
+      :aws_access_key_id => ENV['CARRIER_ID'],
+      :aws_secret_access_key => ENV['CARRIER_ACCESS_KEY']
       })
       directory = connection.directories.get('pantonely')
 
@@ -35,7 +36,7 @@ class Visualizer < Processing::App
 
   def setup
     smooth
-    size(1024,500)
+    size(700,500)
     background 10
     @new_song = ENV["FILEPATH"]
     @name = File.basename(ENV["NAME"], ".*")
@@ -46,7 +47,7 @@ class Visualizer < Processing::App
   def draw
     update_sound
     animate_sound
-    draw_beat
+    # draw_beat
     saveFrame("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-######.jpg")
     mov_make
   end
@@ -54,10 +55,15 @@ class Visualizer < Processing::App
   def mov_make
     if @input.isPlaying == false
       color_assignment
-      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}_#{@assigned_color}.mp4"
+      puts "at colors"
+      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}_#{@assigned_color}.mp4"
+      puts "made movie"
       FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
+      puts "frames were deleted"
       upload
+      puts "upload"
       FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4")
+      puts "delted movie"
      exit
     end
   end
@@ -73,7 +79,7 @@ class Visualizer < Processing::App
     @beat = BeatDetect.new(@input.bufferSize, @input.sampleRate)
     @beat.setSensitivity(300)
     @kickSize = @snareSize = @hatSize = 16
-    bl = BeatListener.new @beat, @input
+    # bl = BeatListener.new @beat, @input
     @freqs = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000]
 
     @current_ffts = Array.new(@freqs.size, 0.001)
@@ -129,37 +135,37 @@ class Visualizer < Processing::App
 
   end
 
-  def draw_beat
-    @kickSize *= 80 if @beat.kick?
-    @snareSize *= 80 if @beat.snare?
-    @hatSize *= 80 if @beat.hat?
-    @kickSize = constrain(@kickSize * 0.95, 16, 80)
-    @snareSize = constrain(@snareSize * 0.95, 16, 80)
-    @hatSize = constrain(@hatSize * 0.95, 16, 80)
-
-    strokeWeight(5)
-    stroke 255
-    line(100, 500, 100, height - @kickSize)
-    stroke 120, 90, 90
-    line(200, 500, 200, height - @snareSize)
-    stroke 180,90, 90
-    line(300, 500, 300, height - @hatSize)
-    @kickSize2  *= 80 if @beat.kick?
-
-    @snareSize2  *= 80 if @beat.snare?
-
-    @hatSize2   *= 80 if @beat.snare?
-    @kickSize2 = constrain(@kickSize * 0.95, 16, 80)
-    @snareSize2 = constrain(@snareSize * 0.95, 16, 80)
-    @hatSize2 = constrain(@hatSize * 0.95, 16, 80)
-    strokeWeight(5)
-    stroke 255
-    line(100, 500, 100, height - @kickSize2)
-    stroke 120, 90, 90
-    line(200, 500, 200, height - @snareSize2)
-    stroke 180,90, 90
-    line(300, 500, 300, height - @hatSize2)
-  end
+  # def draw_beat
+  #   @kickSize *= 80 if @beat.kick?
+  #   @snareSize *= 80 if @beat.snare?
+  #   @hatSize *= 80 if @beat.hat?
+  #   @kickSize = constrain(@kickSize * 0.95, 16, 80)
+  #   @snareSize = constrain(@snareSize * 0.95, 16, 80)
+  #   @hatSize = constrain(@hatSize * 0.95, 16, 80)
+  #
+  #   strokeWeight(5)
+  #   stroke 255
+  #   line(100, 500, 100, height - @kickSize)
+  #   stroke 120, 90, 90
+  #   line(200, 500, 200, height - @snareSize)
+  #   stroke 180,90, 90
+  #   line(300, 500, 300, height - @hatSize)
+  #   @kickSize2  *= 80 if @beat.kick?
+  #
+  #   @snareSize2  *= 80 if @beat.snare?
+  #
+  #   @hatSize2   *= 80 if @beat.snare?
+  #   @kickSize2 = constrain(@kickSize * 0.95, 16, 80)
+  #   @snareSize2 = constrain(@snareSize * 0.95, 16, 80)
+  #   @hatSize2 = constrain(@hatSize * 0.95, 16, 80)
+  #   strokeWeight(5)
+  #   stroke 255
+  #   line(100, 500, 100, height - @kickSize2)
+  #   stroke 120, 90, 90
+  #   line(200, 500, 200, height - @snareSize2)
+  #   stroke 180,90, 90
+  #   line(300, 500, 300, height - @hatSize2)
+  # end
 
   def color_assignment
     @assigned_color = @color.group_by(&:to_s).values.max_by(&:size).first
