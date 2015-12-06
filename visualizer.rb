@@ -6,6 +6,7 @@ class Visualizer < Processing::App
   require 'httparty'
   require 'color_namer'
   require 'fog'
+  require 'fog/aws'
   require 'dotenv'
   Dotenv.load
   load_library "minim"
@@ -56,7 +57,7 @@ class Visualizer < Processing::App
     if @input.isPlaying == false
       color_assignment
       puts "at colors"
-      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}_#{@assigned_color}.mp4"
+      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -r 60 -pix_fmt yuv420p "
       puts "made movie"
       FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
       puts "frames were deleted"

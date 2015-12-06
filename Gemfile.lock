@@ -152,6 +152,7 @@ DEPENDENCIES
   color_namer
   dotenv
   fog
+  fog-aws
   httparty
   redis
   ruby-processing (= 2.6.10)
