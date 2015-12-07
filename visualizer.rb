@@ -1,13 +1,13 @@
 require 'ruby-processing'
 require 'ruby-processing/runner'
 class Visualizer < Processing::App
-  require 'pry'
   require 'fileutils'
   require 'httparty'
   require 'color_namer'
   require 'fog'
   require 'fog/aws'
   require 'dotenv'
+  #require './encoder_job.rb'
   Dotenv.load
   load_library "minim"
   import "ddf.minim"
@@ -57,15 +57,16 @@ class Visualizer < Processing::App
     if @input.isPlaying == false
       color_assignment
       puts "at colors"
-      system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -r 60 -pix_fmt yuv420p "
-      puts "made movie"
-      FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
-      puts "frames were deleted"
-      upload
-      puts "upload"
-      FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4")
-      puts "delted movie"
-     exit
+      #EncodeJob.perform_async("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song}", "#{@name}_#{@assigned_color}.mp4", :mp4)
+        system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}_#{@assigned_color}.mp4"
+        puts "made movie"
+        FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
+       puts "frames were deleted"
+       upload
+       puts "upload"
+       FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4")
+       puts "deleted movie"
+      exit
     end
   end
 
