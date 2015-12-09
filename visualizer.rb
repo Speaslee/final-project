@@ -6,7 +6,9 @@ class Visualizer < Processing::App
   require 'color_namer'
   require 'fog'
   require 'fog/aws'
+  require 'aws-sdk'
   require 'dotenv'
+  require 'httparty'
   #require './encoder_job.rb'
   Dotenv.load
   load_library "minim"
@@ -19,21 +21,22 @@ class Visualizer < Processing::App
   end
 
   def upload
-    connection = Fog::Storage.new({
-      :provider => 'AWS',
-      :region => 'us-east-1',
-      :aws_access_key_id => ENV['CARRIER_ID'],
-      :aws_secret_access_key => ENV['CARRIER_ACCESS_KEY']
-      })
-      directory = connection.directories.get('pantonely')
-
-      file = directory.files.create(
-      :key => "#{@name}_#{@assigned_color}.mp4",
-      :body => File.open("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4"),
-      :public => true
-      )
+    s3 = Aws::S3::Resource.new(
+    credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
+    region:'us-east-1'
+    )
+    @obj = s3.bucket('pantonely').object("#{@name}_#{@assigned_color}.mp4")
+    @obj.upload_file("./#{@name}_#{@assigned_color}.mp4",{content_type:"movie/.mp4",  acl: 'public-read'})
   end
 
+  def update_movie
+    HTTParty.patch "http://pantonely.herokuapp.com/songs/show",
+      body: {
+        song: {movie:  @obj.public_url,
+          id: "#{@id}",
+        tag_list: "#{@assigned_color}"}
+      }.to_json
+  end
 
   def setup
     smooth
@@ -41,6 +44,7 @@ class Visualizer < Processing::App
     background 10
     @new_song = ENV["FILEPATH"]
     @name = File.basename(ENV["NAME"], ".*")
+    @id = ENV["IDENT"]
     setup_sound
     @color = []
   end
@@ -64,6 +68,8 @@ class Visualizer < Processing::App
        puts "frames were deleted"
        upload
        puts "upload"
+       update_movie
+       puts "updated_movie"
        FileUtils.rm_r ("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4")
        puts "deleted movie"
       exit

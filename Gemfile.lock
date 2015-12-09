@@ -2,7 +2,14 @@ GEM
   remote: https://rubygems.org/
   specs:
     CFPropertyList (2.3.2)
+    aws-sdk (2.2.4)
+      aws-sdk-resources (= 2.2.4)
+    aws-sdk-core (2.2.4)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.2.4)
+      aws-sdk-core (= 2.2.4)
     builder (3.2.2)
+    coderay (1.1.0)
     color (1.8)
     color_namer (0.1.0)
       color (>= 1.4.1)
@@ -10,6 +17,7 @@ GEM
     connection_pool (2.2.0)
     dotenv (2.0.2)
     excon (0.45.4)
+    ffi (1.9.10-java)
     fission (0.5.0)
       CFPropertyList (~> 2.2)
     fog (1.36.0)
@@ -124,10 +132,18 @@ GEM
       multi_xml (>= 0.5.2)
     inflecto (0.0.2)
     ipaddress (0.8.0)
+    jmespath (1.1.3)
     json (1.8.3-java)
+    method_source (0.8.2)
+    mime-types (2.6.2)
     multi_json (1.11.2)
     multi_xml (0.5.5)
     nokogiri (1.6.7-java)
+    pry (0.10.3-java)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+      spoon (~> 0.0)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -142,6 +158,9 @@ GEM
       rack (~> 1.4)
       rack-protection (~> 1.4)
       tilt (>= 1.3, < 3)
+    slop (3.6.0)
+    spoon (0.0.4)
+      ffi
     tilt (2.0.1)
     xml-simple (1.1.5)
 
@@ -149,11 +168,14 @@ PLATFORMS
   java
 
 DEPENDENCIES
+  aws-sdk (~> 2)
   color_namer
   dotenv
   fog
   fog-aws
   httparty
+  mime-types
+  pry
   redis
   ruby-processing (= 2.6.10)
   sidekiq

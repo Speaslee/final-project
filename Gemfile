@@ -8,3 +8,6 @@ gem 'sinatra'
 gem 'redis'
 gem "fog-aws"
 gem 'sidekiq'
+gem 'mime-types'
+gem 'aws-sdk', '~> 2'
+gem 'pry'
