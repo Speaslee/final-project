@@ -35,7 +35,7 @@ class Visualizer < Processing::App
         song: {movie:  @obj.public_url,
           id: "#{@id}",
         tag_list: "#{@assigned_color}"}
-      }.to_json
+      }
   end
 
   def setup
@@ -62,7 +62,7 @@ class Visualizer < Processing::App
       color_assignment
       puts "at colors"
       #EncodeJob.perform_async("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song}", "#{@name}_#{@assigned_color}.mp4", :mp4)
-        system "ffmpeg -framerate 60 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -r 60 -pix_fmt yuv420p #{@name}_#{@assigned_color}.mp4"
+        system "ffmpeg -framerate 12 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -vf fps=60 -pix_fmt yuv420p  #{@name}_#{@assigned_color}.mp4"
         puts "made movie"
         FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
        puts "frames were deleted"
