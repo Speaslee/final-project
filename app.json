@@ -1,0 +1,5 @@
+{
+  "name": "Final Project",
+  "description:": "The Sidekiq worker for pantonely",
+  "image": "heroku/jruby"
+}

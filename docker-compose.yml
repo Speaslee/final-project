@@ -1,0 +1,19 @@
+worker:
+  build: .
+  command: 'bash -c ''bundle exec sidekiq -r ./worker.rb -c1'''
+  working_dir: /app/user
+  environment:
+    PORT: 8080
+    REDIS_URL: 'redis://redistogo:c5944fb2b5a9501471166f451a8f04e8@ray.redistogo.com:10030/'
+  ports:
+    - '8080:8080'
+shell:
+  build: .
+  command: bash
+  working_dir: /app/user
+  environment:
+    PORT: 8080
+  ports:
+    - '8080:8080'
+  volumes:
+    - '.:/app/user'
