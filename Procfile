@@ -1,1 +1,1 @@
-web: bundle exec ruby worker.rb -p $PORT
+worker: bundle exec sidekiq -r ./worker.rb -c1

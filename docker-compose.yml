@@ -1,4 +1,4 @@
-worker:
+web:
   build: .
   command: 'bash -c ''bundle exec sidekiq -r ./worker.rb -c1'''
   working_dir: /app/user
