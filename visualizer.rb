@@ -1,5 +1,8 @@
 require 'ruby-processing'
 require 'ruby-processing/runner'
+
+FrameDir = ENV["FRAME_DIR"] || "whatever"
+
 class Visualizer < Processing::App
   require 'fileutils'
   require 'httparty'
@@ -26,7 +29,7 @@ class Visualizer < Processing::App
     region:'us-east-1'
     )
     @obj = s3.bucket('pantonely').object("#{@name}_#{@assigned_color}.mp4")
-    @obj.upload_file("./#{@name}_#{@assigned_color}.mp4",{content_type:"movie/.mp4",  acl: 'public-read'})
+    @obj.upload_file("/Users/sophiapeaslee/Desktop/Programs/finalproject/#{@name}_#{@assigned_color}.mp4",{content_type:"movie/.mp4",  acl: 'public-read'})
   end
 
   def update_movie
@@ -47,13 +50,14 @@ class Visualizer < Processing::App
     @id = ENV["IDENT"]
     setup_sound
     @color = []
+
   end
 
   def draw
     update_sound
     animate_sound
     # draw_beat
-    saveFrame("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-######.jpg")
+    saveFrame("/Users/sophiapeaslee/Desktop/Programs/finalproject/line-######.jpg")
     mov_make
   end
 
@@ -62,9 +66,9 @@ class Visualizer < Processing::App
       color_assignment
       puts "at colors"
       #EncodeJob.perform_async("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song}", "#{@name}_#{@assigned_color}.mp4", :mp4)
-        system "ffmpeg -framerate 12 -i /Users/sophiapeaslee/Desktop/Programs/finalproject/frames/line-%06d.jpg -i #{@new_song} -c:v libx264 -vf fps=60 -pix_fmt yuv420p  #{@name}_#{@assigned_color}.mp4"
+        system "ffmpeg -framerate 12 -i #{FrameDir}/line-%06d.jpg -i #{@new_song} -c:v libx264 -vf fps=60 -pix_fmt yuv420p  #{@name}_#{@assigned_color}.mp4"
         puts "made movie"
-        FileUtils.rm_r Dir.glob("/Users/sophiapeaslee/Desktop/Programs/finalproject/frames/*.jpg")
+        FileUtils.rm_r Dir.glob("#{FrameDir}/*.jpg")
        puts "frames were deleted"
        upload
        puts "upload"
